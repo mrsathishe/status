@@ -1,12 +1,13 @@
 #!/usr/bin/env bash
-# Build & deploy each time you update the code. Run from the project root:
-#   npm run build   (or:  bash deploy/deploy.sh)
+# One-command deploy. Run from the project root ON THE VPS:
+#   npm run deploy   (or:  bash deploy/deploy.sh)
 #
+# Idempotent: the FIRST run installs the systemd service (via setup.sh);
+# EVERY run then:
 #   1. Installs/updates backend deps.
-#   2. Moves the static frontend into the nginx web root (needs sudo).
-#   3. Restarts the backend service so changes take effect.
-#
-# Run deploy/setup.sh ONCE first to install the systemd service.
+#   2. Minifies the static frontend into dist/.
+#   3. Moves the static frontend into the nginx web root (needs sudo).
+#   4. Restarts the backend service so changes take effect.
 
 set -euo pipefail
 
@@ -15,6 +16,13 @@ APP_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 
 # Where nginx serves the static frontend from.
 FRONTEND_DEST="/var/www/status"
+
+# First-time bootstrap: install the systemd service if it isn't there yet.
+SERVICE="/etc/systemd/system/status-api.service"
+if [ ! -f "$SERVICE" ]; then
+  echo "==> systemd service not found — running one-time setup first"
+  bash "$SCRIPT_DIR/setup.sh"
+fi
 
 echo "==> Installing backend dependencies"
 npm --prefix "$APP_DIR/api" ci --omit=dev

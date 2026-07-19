@@ -4,6 +4,7 @@
   "description": "Server status dashboard (static frontend + Express API)",
   "scripts": {
     "setup": "bash deploy/setup.sh",
+    "deploy": "bash deploy/deploy.sh",
     "build": "bash deploy/deploy.sh",
     "minify": "node deploy/minify.js",
     "start": "npm --prefix api start"
