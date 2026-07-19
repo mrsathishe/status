@@ -1,0 +1,24 @@
+# Reference only — `npm run setup` (deploy/setup.sh) GENERATES this file
+# automatically with your real project path and user, then installs it.
+# Shown here so you can see what gets created / edit it manually if needed:
+#   sudo cp deploy/status-api.service /etc/systemd/system/   # after editing the placeholders
+#   sudo systemctl daemon-reload && sudo systemctl enable --now status-api
+
+[Unit]
+Description=Status dashboard API (Express)
+After=network.target
+
+[Service]
+Type=simple
+# Runs as your own user, from the clone in your home folder — no /opt, no sudo needed to run.
+User=YOUR_USER
+WorkingDirectory=/home/YOUR_USER/status/api
+ExecStart=/usr/bin/node server.js
+Restart=on-failure
+RestartSec=3
+Environment=NODE_ENV=production
+Environment=HOST=127.0.0.1
+Environment=PORT=3000
+
+[Install]
+WantedBy=multi-user.target

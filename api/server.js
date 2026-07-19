@@ -7,6 +7,9 @@ const path = require("path");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+// Bind to loopback so the app is reachable only via nginx, never directly from the internet.
+const HOST = process.env.HOST || "127.0.0.1";
+const IS_PROD = process.env.NODE_ENV === "production";
 const MONGO_URI = process.env.MONGO_URI || "mongodb://127.0.0.1:27017/status";
 
 // Static login credentials (single user). Loaded from api/.env — never hardcoded.
@@ -15,6 +18,9 @@ const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
 const SESSION_SECRET = process.env.SESSION_SECRET || "insecure-dev-secret";
 
 const ROOT = path.join(__dirname, "..");
+
+// Behind nginx (which terminates TLS), trust the proxy so secure cookies work.
+if (IS_PROD) app.set("trust proxy", 1);
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -27,6 +33,7 @@ app.use(
     cookie: {
       httpOnly: true,
       sameSite: "lax",
+      secure: IS_PROD, // require HTTPS for the cookie in production
       maxAge: 1000 * 60 * 60 * 8 // 8 hours
     }
   })
@@ -92,6 +99,6 @@ mongoose
   .then(() => console.log("Connected to MongoDB"))
   .catch((err) => console.error("MongoDB connection error:", err.message));
 
-app.listen(PORT, () => {
-  console.log(`Server listening on http://localhost:${PORT}`);
+app.listen(PORT, HOST, () => {
+  console.log(`Server listening on http://${HOST}:${PORT}`);
 });
