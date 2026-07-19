@@ -13,7 +13,7 @@ NODE_BIN="$(command -v node)"
 SERVICE="/etc/systemd/system/status-api.service"
 
 echo "==> Installing backend dependencies"
-npm --prefix "$APP_DIR/api" ci --omit=dev
+npm --prefix "$APP_DIR/api" install --omit=dev
 
 if [ ! -f "$APP_DIR/api/.env" ]; then
   echo "==> Creating api/.env from template — edit it before starting!"

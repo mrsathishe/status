@@ -25,10 +25,10 @@ if [ ! -f "$SERVICE" ]; then
 fi
 
 echo "==> Installing backend dependencies"
-npm --prefix "$APP_DIR/api" ci --omit=dev
+npm --prefix "$APP_DIR/api" install --omit=dev
 
 echo "==> Installing build tools (esbuild)"
-npm --prefix "$APP_DIR" ci
+npm --prefix "$APP_DIR" install
 
 echo "==> Minifying frontend -> dist/"
 node "$APP_DIR/deploy/minify.js"

@@ -1,3 +1,7 @@
 node_modules/
 .env
 dist/
+
+# Lockfiles are regenerated on deploy (VPS uses the public registry via .npmrc).
+# Ignored so a Mac's corporate npm.apple.com registry can't sneak back in.
+package-lock.json
